@@ -315,40 +315,42 @@ public class Main extends Application {
             }
             startListNode = startListNode.getNextConnection();
         }
-        for(int i =1; i < graph.size();i++ ){
-            if(marked.contains(i)){
-                continue;
-            }else{
-                int numberOfMarkedNodes = 0;
-                GraphEdgeNode temp = graph.get(i).start;
-                while(temp != null){
-                    if(temp.getData() == -1){
-                        temp = temp.getNextConnection();
-                        continue;
-                    }else {
-                        numberOfMarkedNodes++;
-                        temp = temp.getNextConnection();
-                    }
-                }
-                if(numberOfMarkedNodes >= 2){
-                    GraphEdgeNode tempStart = graph.get(i).start;
-                    int tempCount = 0;
-                    int ithNodeData = 0;
-                    while(tempStart != null){
-                        if(tempStart.getData() != -1 && tempCount < 2){
-                            tempCount++;
-                            ithNodeData = ithNodeData + tempStart.getData();
-                            tempStart = tempStart.getNextConnection();
-                        }else{
-                            tempStart = tempStart.getNextConnection();
+        while(marked.size() < numberOfSides) {
+            for (int i = 1; i < graph.size(); i++) {
+                if (marked.contains(i)) {
+                    continue;
+                } else {
+                    int numberOfMarkedNodes = 0;
+                    GraphEdgeNode temp = graph.get(i).start;
+                    while (temp != null) {
+                        if (temp.getData() == -1) {
+                            temp = temp.getNextConnection();
+                            continue;
+                        } else {
+                            numberOfMarkedNodes++;
+                            temp = temp.getNextConnection();
                         }
                     }
-                    marked.add(i);
-                    diagFrieze[i] = ithNodeData;
-                    tempStart = graph.get(i).start;
-                    while(tempStart != null){
-                        tempStart.getDirectConnection().setData(ithNodeData);
-                        tempStart = tempStart.getNextConnection();
+                    if (numberOfMarkedNodes >= 2) {
+                        GraphEdgeNode tempStart = graph.get(i).start;
+                        int tempCount = 0;
+                        int ithNodeData = 0;
+                        while (tempStart != null) {
+                            if (tempStart.getData() != -1 && tempCount < 2) {
+                                tempCount++;
+                                ithNodeData = ithNodeData + tempStart.getData();
+                                tempStart = tempStart.getNextConnection();
+                            } else {
+                                tempStart = tempStart.getNextConnection();
+                            }
+                        }
+                        marked.add(i);
+                        diagFrieze[i] = ithNodeData;
+                        tempStart = graph.get(i).start;
+                        while (tempStart != null) {
+                            tempStart.getDirectConnection().setData(ithNodeData);
+                            tempStart = tempStart.getNextConnection();
+                        }
                     }
                 }
             }
@@ -367,7 +369,7 @@ public class Main extends Application {
         double[] YPoints = new double[sides];
         final double angleStep = Math.PI*2 / sides;
         double angle = 0;
-        for (int i = 0; i < sides; i++, angle += angleStep) {
+        for (int i = 0; i < sides; i++, angle -= angleStep) {
             XPoints[i] = Math.sin(angle) * radius + centerX; // x coordinate of the corner
             YPoints[i] = Math.cos(angle) * radius + centerY; // y coordinate of the corner
             vertexList.add(new Point(new Point2D(XPoints[i],YPoints[i]),i+1));

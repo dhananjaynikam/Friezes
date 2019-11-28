@@ -29,6 +29,7 @@ public class Main extends Application {
     public boolean firstTime = true;
     public boolean diagonalSelected=false;
     private int numberOfSides=0;
+    int[] flowerFrieze;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -47,27 +48,45 @@ public class Main extends Application {
 
         Menu startMenu = new Menu("START");
         MenuItem algorithmicMenu = new MenuItem("ALGORITHMIC");
-        MenuItem countingMethodMenu = new MenuItem("COUNTING METHOD");
+        Menu countingMethodMenu = new Menu("COUNTING METHOD");
+        MenuItem flower = new MenuItem("FLOWER TECHNIQUE ");
+        MenuItem linearFrieze = new MenuItem("LINEAR FRIEZE");
+        countingMethodMenu.getItems().addAll(flower,linearFrieze);
+
         startMenu.getItems().addAll(algorithmicMenu,countingMethodMenu);
         Menu moreAbout = new Menu("More about project");
-        MenuItem learn = new MenuItem("LEARN");
+        Menu learn = new Menu("LEARN");
+        MenuItem learnFlower = new MenuItem("Flower Pattern");
+        MenuItem learnLinearCounting = new MenuItem("Counting Method");
+        MenuItem learnAlgorithmic = new MenuItem("Algorithmic");
         moreAbout.getItems().addAll(learn);
         menuBar.getMenus().addAll(startMenu,moreAbout);
         menuBar.setStyle("-fx-font-size: 1.2em; -fx-background-color: #ffffff;-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5; -fx-border-color: blue; ");
-
-       Scene algorithmicScene = getAlgorithmicScene();
-//        Scene countingMethodScene;  //getCountingMethodScene();
+        learn.getItems().addAll(learnAlgorithmic,learnLinearCounting,learnFlower);
+        Scene algorithmicScene = getAlgorithmicScene();
+        Scene countingMethodScene = getCountingMethodScene();
+        Scene flowerPatternScene = getFlowerPatternScene();
 //
         algorithmicMenu.setOnAction(e -> {
             window.setScene(algorithmicScene);
         });
-//
-//        countingMethodMenu.setOnAction(e -> {
-//            window.setScene(countingMethodScene);
-//        });
 
-        learn.setOnAction(e -> {
-            LearnWindow.display();
+        linearFrieze.setOnAction(e -> {
+            window.setScene(countingMethodScene);
+        });
+
+        flower.setOnAction(e -> {
+            window.setScene(flowerPatternScene);
+        });
+
+        learnAlgorithmic.setOnAction(e -> {
+            LearnWindow.displayAlgorithmic();
+        });
+        learnFlower.setOnAction(e -> {
+            LearnWindow.displayFlowerAlgo();
+        });
+        learnLinearCounting.setOnAction(e -> {
+            LearnWindow.displayCountingAlgo();
         });
 
         //Creating label for the centre pane
@@ -103,15 +122,6 @@ public class Main extends Application {
         ArrayList<GraphEdgeList> graph = new ArrayList<>();
 
         Insets insets = new Insets(10);
-        String label = "1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10\n"+
-                "1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10\n"+
-                "1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10\n"+
-                "1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10\n"+
-                "1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10\n"+
-                "1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10\n"+
-                "1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10\n"+
-                "1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10\n"+
-                "1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10\n";
 
         BorderPane borderPane = new BorderPane();
         Pane wrapperPane = new Pane();
@@ -119,9 +129,9 @@ public class Main extends Application {
         wrapperPane.setMaxWidth(canvasWidth);
         wrapperPane.setBackground(new Background(new BackgroundFill(Color.WHITE,CornerRadii.EMPTY,Insets.EMPTY)));
         VBox labelVBox = new VBox(10);
-        Label label1 = new Label(label);
-        Label label2 = new Label(label);
-        Label label3 = new Label(label);
+        Label label1 = new Label();
+        Label label2 = new Label();
+        Label label3 = new Label();
         TextField numberOfSidesTextField = new TextField();
         Label numberOfSidesLabel = new Label("Enter number of Sides of Polygon:");
         numberOfSidesTextField.setPromptText("3-10");
@@ -134,7 +144,7 @@ public class Main extends Application {
         Canvas canvas = new Canvas(canvasWidth,canvasHeight);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setGlobalBlendMode(BlendMode.SRC_OVER);
-        draw(gc);
+        draw(canvas);
         wrapperPane.getChildren().add(canvas);
         borderPane.setPadding(new Insets(50,10,10,20));
         borderPane.setLeft(wrapperPane);
@@ -154,7 +164,7 @@ public class Main extends Application {
         numberOfSidesTextField.setOnAction(e -> {
             if(validateInput(numberOfSidesTextField.getText())){
                 numberOfSides = Integer.parseInt(numberOfSidesTextField.getText());
-                drawPolygon(numberOfSides,gc,vertexList,edgeList);
+                drawPolygon(numberOfSides,canvas,vertexList,edgeList);
             }else{
                 SelectionBox.display("ERROR", "Enter a valid number between 3 and 10", "OK", null);
             }
@@ -226,22 +236,315 @@ public class Main extends Application {
                 SelectionBox.display("ERROR","PLease complete all the steps to generate frieze", "OK",null);
             }else {
                 initialiseGraph(edgeList,graph);
-                int[] diagFrieze  = calculateFriezeAlgorithmic(graph,startingPoints);
-                label1.setText(Arrays.toString(diagFrieze));
+                ArrayList<int[]> friezes = new ArrayList<>();
+                for(Point item : startingPoints) {
+                    int[] diagFrieze  = calculateFriezeAlgorithmicDiag(graph,item);
+                    friezes.add(calculateFriezeAlgorithmic(diagFrieze, item.getId()));
+                }
+                ArrayList<String> friezesFinal = new ArrayList<>();
+                for(int[] item : friezes){
+                    friezesFinal.add(getFinalFriezeFormation(item));
+                }
+                label1.setText("Red Frieze=\n"+friezesFinal.get(0));
+                label2.setText("Green Frieze=\n"+friezesFinal.get(1));
+                label3.setText("Blue Frieze=\n"+friezesFinal.get(2));
             }
         });
 
         return algorithmicScene;
     }
 
-//    public Scene getCountingMethodScene(){
-//        Scene countingMethodScene;
-//
-//        return countingMethodScene;
-//    }
+    public Scene getCountingMethodScene(){
+        Scene countingMethodScene;
+        AtomicInteger diagonalCounter = new AtomicInteger(0);
+        ArrayList<Point> vertexList = new ArrayList<>();
+        ArrayList<ArrayList<Point>> edgeList = new ArrayList<>();
+        ArrayList<ArrayList<Point>> diagonalList = new ArrayList<>();
+        ArrayList<GraphEdgeList> graph = new ArrayList<>();
 
-    private void draw(GraphicsContext gc){
-        gc.strokeRect(0,0,canvasWidth,canvasHeight);
+        Insets insets = new Insets(10);
+
+        BorderPane borderPane = new BorderPane();
+        Pane wrapperPane = new Pane();
+        wrapperPane.setMaxHeight(canvasHeight);
+        wrapperPane.setMaxWidth(canvasWidth);
+        wrapperPane.setBackground(new Background(new BackgroundFill(Color.WHITE,CornerRadii.EMPTY,Insets.EMPTY)));
+        VBox labelVBox = new VBox(10);
+        Label label1 = new Label();
+        TextField numberOfSidesTextField = new TextField();
+        Label numberOfSidesLabel = new Label("Enter number of Sides of Polygon:");
+        numberOfSidesTextField.setPromptText("3-10");
+        Button generateFrieze = new Button("GENERATE FRIEZE");
+        HBox topHBox = new HBox(10);
+        topHBox.getChildren().addAll(numberOfSidesLabel,numberOfSidesTextField,generateFrieze);
+
+        labelVBox.getChildren().addAll(label1);
+
+        Canvas canvas = new Canvas(canvasWidth,canvasHeight);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setGlobalBlendMode(BlendMode.SRC_OVER);
+        draw(canvas);
+        wrapperPane.getChildren().add(canvas);
+        borderPane.setPadding(new Insets(50,10,10,20));
+        borderPane.setLeft(wrapperPane);
+        borderPane.setCenter(labelVBox);
+        borderPane.setTop(topHBox);
+        BorderPane.setMargin(borderPane.getTop(),insets);
+        BorderPane.setMargin(borderPane.getLeft(),insets);
+        BorderPane.setMargin(borderPane.getCenter(),insets);
+        BorderPane.setMargin(borderPane.getLeft(),insets);
+        numberOfSidesTextField.focusedProperty().addListener(e -> {
+            if(firstTime){
+                topHBox.requestFocus();
+                firstTime = false;
+            }
+        });
+
+        numberOfSidesTextField.setOnAction(e -> {
+            if(validateInput(numberOfSidesTextField.getText())){
+                numberOfSides = Integer.parseInt(numberOfSidesTextField.getText());
+                drawPolygon(numberOfSides,canvas,vertexList,edgeList);
+            }else{
+                SelectionBox.display("ERROR", "Enter a valid number between 3 and 10", "OK", null);
+            }
+        });
+        Point2D[] diagonalPoints = new Point2D[2];
+
+        canvas.setOnMouseClicked(e -> {
+            Point2D temp = new Point2D(e.getX(),e.getY());
+            if(!diagonalSelected){
+                for(Point item: vertexList) {
+                    if (temp.distance(item.getCenter()) <= 15) {
+                        if(diagonalPoints[0] == null){
+                            diagonalPoints[0] = item.getCenter();
+                            break;
+                        }else {
+                            diagonalPoints[1] = item.getCenter();
+                            if(validateDiagonal(diagonalPoints,diagonalList)){
+                                Point temp1 = new Point();
+                                Point temp2 = new Point();
+                                for(int i = 0;i< vertexList.size();i++){
+                                    if(vertexList.get(i).getCenter().equals(diagonalPoints[0])) {
+                                        temp1 = vertexList.get(i);
+                                        break;
+                                    }
+                                }
+                                for(int i = 0;i< vertexList.size();i++){
+                                    if(vertexList.get(i).getCenter().equals(diagonalPoints[1])) {
+                                        temp2 = vertexList.get(i);
+                                        break;
+                                    }
+                                }
+                                ArrayList<Point> tempDiagList = new ArrayList<>();
+                                tempDiagList.add(temp1);
+                                tempDiagList.add(temp2);
+                                edgeList.add(tempDiagList);
+                                diagonalList.add(tempDiagList);
+                                gc.strokeLine(temp1.getCenter().getX(),temp1.getCenter().getY(),temp2.getCenter().getX(),temp2.getCenter().getY());
+                                diagonalCounter.getAndIncrement();
+                            }
+                        }
+                        diagonalPoints[0] = null;
+                        diagonalPoints[1] = null;
+                    }
+                }
+            }
+            if(diagonalCounter.get() == vertexList.size()-3){
+                diagonalSelected = true;
+                gc.setFill(Color.RED);
+                gc.fillOval(edgeList.get(0).get(0).getCenter().getX()-15,edgeList.get(0).get(0).getCenter().getY()-15,30,30);
+                gc.setFill(Color.BLACK);
+            }
+        });
+
+        generateFrieze.setOnAction(e -> {
+            if(!diagonalSelected){
+                SelectionBox.display("ERROR","PLease complete all the steps to generate frieze", "OK",null);
+            }else {
+                initialiseGraph(edgeList, graph);
+                Point startingPoint = edgeList.get(0).get(0);
+                int[] startFrieze  = calculateFriezeCountingStart(graph,startingPoint);
+                int[] frieze = calculateFriezeCounting(startFrieze, startingPoint.getId());
+                label1.setText("The Freize starting from RED point using counting method is:\n" + getFinalFriezeFormation(frieze));
+            }
+        });
+
+        countingMethodScene = new Scene(borderPane,width,height);
+        return countingMethodScene;
+    }
+
+    private Scene getFlowerPatternScene() {
+        Scene flowerPatternScene;
+        AtomicInteger diagonalCounter = new AtomicInteger(0);
+        ArrayList<Point> vertexList = new ArrayList<>();
+        ArrayList<ArrayList<Point>> edgeList = new ArrayList<>();
+        ArrayList<ArrayList<Point>> diagonalList = new ArrayList<>();
+        ArrayList<GraphEdgeList> graph = new ArrayList<>();
+
+        Insets insets = new Insets(10);
+
+        BorderPane borderPane = new BorderPane();
+        Pane wrapperPane = new Pane();
+        wrapperPane.setMaxHeight(canvasHeight);
+        wrapperPane.setMaxWidth(canvasWidth);
+        wrapperPane.setBackground(new Background(new BackgroundFill(Color.WHITE,CornerRadii.EMPTY,Insets.EMPTY)));
+        Pane wrapperPaneFlower = new Pane();
+        wrapperPaneFlower.setMaxHeight(450);
+        wrapperPaneFlower.setMaxWidth(450);
+        wrapperPaneFlower.setBackground(new Background(new BackgroundFill(Color.WHITE,CornerRadii.EMPTY,Insets.EMPTY)));
+        Canvas canvasFlower = new Canvas(450,450);
+        TextField numberOfSidesTextField = new TextField();
+        Label numberOfSidesLabel = new Label("Enter number of Sides of Polygon:");
+        numberOfSidesTextField.setPromptText("3-10");
+        Button generateFrieze = new Button("GENERATE FRIEZE");
+        HBox topHBox = new HBox(10);
+        topHBox.getChildren().addAll(numberOfSidesLabel,numberOfSidesTextField,generateFrieze);
+
+        wrapperPaneFlower.getChildren().addAll(canvasFlower);
+        GraphicsContext gc2 = canvasFlower.getGraphicsContext2D();
+        draw(canvasFlower);
+        Canvas canvas = new Canvas(canvasWidth,canvasHeight);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setGlobalBlendMode(BlendMode.SRC_OVER);
+        draw(canvas);
+        wrapperPane.getChildren().add(canvas);
+        borderPane.setPadding(new Insets(50,10,10,20));
+        borderPane.setLeft(wrapperPane);
+        borderPane.setRight(wrapperPaneFlower);
+        borderPane.setTop(topHBox);
+        BorderPane.setMargin(borderPane.getTop(),insets);
+        BorderPane.setMargin(borderPane.getLeft(),insets);
+        BorderPane.setMargin(borderPane.getRight(),insets);
+        BorderPane.setMargin(borderPane.getLeft(),insets);
+
+        numberOfSidesTextField.focusedProperty().addListener(e -> {
+            if(firstTime){
+                topHBox.requestFocus();
+                firstTime = false;
+            }
+        });
+
+        ArrayList<TextField> textFields = new ArrayList<>();
+        ArrayList<Point2D> textFieldPoints = new ArrayList<>();
+
+        numberOfSidesTextField.setOnAction(e -> {
+            if(validateInput(numberOfSidesTextField.getText())){
+                numberOfSides = Integer.parseInt(numberOfSidesTextField.getText());
+                drawPolygon(numberOfSides,canvas,vertexList,edgeList);
+                double centerX = 225;
+                double centerY = 225;
+                double radius = 80;
+                double[] XPoints = new double[numberOfSides];
+                double[] YPoints = new double[numberOfSides];
+                final double angleStep = Math.PI*2 / numberOfSides;
+                double angle = 0;
+                for(int k = 1; k < numberOfSides; k++) {
+                    for (int i = 0; i < numberOfSides; i = i + 1, angle += angleStep) {
+                        XPoints[i] = Math.sin(angle) * radius + centerX; // x coordinate of the corner
+                        YPoints[i] = Math.cos(angle) * radius + centerY; // y coordinate of the corner
+                        textFieldPoints.add(new Point2D(XPoints[i],YPoints[i]));
+                    }
+                    gc2.strokePolygon(XPoints,YPoints,numberOfSides);
+                    angle = angle + angleStep/2;
+                    double asec = 1/Math.cos(Math.PI/numberOfSides);
+                    radius = radius*asec;
+                }
+                for(int i = 0; i < textFieldPoints.size(); i++){
+                    textFields.add(new TextField());
+                    Point2D temp = textFieldPoints.get(i);
+                    textFields.get(i).setLayoutX(temp.getX());
+                    textFields.get(i).setLayoutY(temp.getY());
+                    textFields.get(i).setPrefWidth(25);
+                }
+                wrapperPaneFlower.getChildren().addAll(textFields);
+                textFields.forEach(tf -> {
+                    tf.textProperty().addListener((obs, oldVal, newVal) -> {
+                        int tempIndex = textFields.indexOf(tf);
+                        if(Integer.parseInt(newVal) != flowerFrieze[tempIndex+1]){
+                            SelectionBox.display("ERROR","Please follow the example in learning tab. (Formula:  a * d = b * c + 1)", "OK", null);
+                            tf.clear();
+                        }else{
+                            tf.setEditable(false);
+                        }
+                    });
+                });
+            }else{
+                SelectionBox.display("ERROR", "Enter a valid number between 3 and 10", "OK", null);
+            }
+        });
+
+        Point2D[] diagonalPoints = new Point2D[2];
+
+        canvas.setOnMouseClicked(e -> {
+            Point2D temp = new Point2D(e.getX(),e.getY());
+            if(!diagonalSelected){
+                for(Point item: vertexList) {
+                    if (temp.distance(item.getCenter()) <= 15) {
+                        if(diagonalPoints[0] == null){
+                            diagonalPoints[0] = item.getCenter();
+                            break;
+                        }else {
+                            diagonalPoints[1] = item.getCenter();
+                            if(validateDiagonal(diagonalPoints,diagonalList)){
+                                Point temp1 = new Point();
+                                Point temp2 = new Point();
+                                for(int i = 0;i< vertexList.size();i++){
+                                    if(vertexList.get(i).getCenter().equals(diagonalPoints[0])) {
+                                        temp1 = vertexList.get(i);
+                                        break;
+                                    }
+                                }
+                                for(int i = 0;i< vertexList.size();i++){
+                                    if(vertexList.get(i).getCenter().equals(diagonalPoints[1])) {
+                                        temp2 = vertexList.get(i);
+                                        break;
+                                    }
+                                }
+                                ArrayList<Point> tempDiagList = new ArrayList<>();
+                                tempDiagList.add(temp1);
+                                tempDiagList.add(temp2);
+                                edgeList.add(tempDiagList);
+                                diagonalList.add(tempDiagList);
+                                gc.strokeLine(temp1.getCenter().getX(),temp1.getCenter().getY(),temp2.getCenter().getX(),temp2.getCenter().getY());
+                                diagonalCounter.getAndIncrement();
+                            }
+                        }
+                        diagonalPoints[0] = null;
+                        diagonalPoints[1] = null;
+                    }
+                }
+            }
+            if(diagonalCounter.get() == vertexList.size()-3){
+                diagonalSelected = true;
+                gc.setFill(Color.RED);
+                gc.fillOval(edgeList.get(0).get(0).getCenter().getX()-15,edgeList.get(0).get(0).getCenter().getY()-15,30,30);
+                gc.setFill(Color.BLACK);
+            }
+        });
+
+        generateFrieze.setOnAction(e -> {
+            if(!diagonalSelected){
+                SelectionBox.display("ERROR","PLease complete all the steps to generate frieze", "OK",null);
+            }else {
+                initialiseGraph(edgeList, graph);
+                Point startingPoint = edgeList.get(0).get(0);
+                int[] startFrieze  = calculateFriezeCountingStart(graph,startingPoint);
+                flowerFrieze = calculateFriezeCounting(startFrieze, startingPoint.getId());
+                System.out.println(Arrays.toString(flowerFrieze));
+                for(int i = 0; i< numberOfSides*2; i++){
+                    textFields.get(i).setText(Integer.toString(flowerFrieze[i+1]));
+                    textFields.get(i).setEditable(false);
+                }
+            }
+        });
+
+        flowerPatternScene = new Scene(borderPane, width,height);
+        return flowerPatternScene;
+    }
+
+    private void draw(Canvas canvas){
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.strokeRect(0,0,canvas.getWidth(),canvas.getHeight());
     }
 
     private boolean validateInput(String text){
@@ -293,10 +596,9 @@ public class Main extends Application {
         }
     }
 
-    private int[] calculateFriezeAlgorithmic(ArrayList<GraphEdgeList> graph, ArrayList<Point> startingPoints) {
+    private int[] calculateFriezeAlgorithmicDiag(ArrayList<GraphEdgeList> graph, Point start) {
         int[] diagFrieze = new int[numberOfSides+1];
         ArrayList<Integer> marked = new ArrayList<>();
-        Point start = startingPoints.get(0);
         GraphEdgeNode startListNode = graph.get(start.getId()).start;
         while(startListNode != null){
             startListNode.getDirectConnection().setData(0);
@@ -359,9 +661,111 @@ public class Main extends Application {
         return diagFrieze;
     }
 
-    private void drawPolygon(int sides, GraphicsContext gc, ArrayList<Point> vertexList, ArrayList<ArrayList<Point>> edgeList){
-        gc.clearRect(0,0,canvasWidth,canvasHeight);
-        draw(gc);
+    private int[] calculateFriezeAlgorithmic(int[] diagFrieze, int startPoint ) {
+        int[] frieze = new int[numberOfSides*(numberOfSides-1)+1];
+        for(int k =0; k <= numberOfSides; k++){
+            frieze[k] = 1;
+        }
+        for(int k =frieze.length-numberOfSides; k < frieze.length; k++){
+            frieze[k] = 1;
+        }
+        int i =startPoint+1;
+        int j =1;
+        while(i != startPoint){
+            if(i == numberOfSides){
+                frieze[j] = diagFrieze[i];
+                i = 1;
+            }else {
+                frieze[j] = diagFrieze[i];
+                i++;
+            }
+            j = j+numberOfSides;
+        }
+
+        for(int k = numberOfSides+2; k <= numberOfSides*2;k++){
+            for(int l = k; l < frieze.length-numberOfSides;l = l+numberOfSides){
+                int a = frieze[l-1];
+                int b = frieze[l-numberOfSides];
+                int c = frieze[l+numberOfSides-1];
+                int d = (b*c+1)/a;
+                frieze[l] = d;
+            }
+        }
+        return frieze;
+    }
+
+    private String getFinalFriezeFormation(int[] item) {
+        StringBuilder frieze = new StringBuilder();
+        int rowCounter = 0;
+        for(int i = 0; i<=item.length-numberOfSides;i=i+numberOfSides){
+            for(int l = rowCounter; l > 0; l--){
+                frieze.append("-");
+            }
+            for(int k =i; k < i+numberOfSides;k++){
+                frieze.append(item[k]);
+                frieze.append(" ");
+            }
+            for(int k =i; k < i+numberOfSides;k++){
+                frieze.append(item[k]);
+                frieze.append(" ");
+            }
+            for(int l = numberOfSides-rowCounter-2; l > 0; l--){
+                frieze.append("-");
+            }
+            frieze.append("\n");
+            rowCounter++;
+        }
+        return frieze.toString();
+    }
+
+    private int[] calculateFriezeCountingStart(ArrayList<GraphEdgeList> graph, Point startingPoint) {
+        //write the algorithm here
+        //return the initial frieze in array
+        int[] startFrieze = new int[numberOfSides+1];
+        for(int i =1; i< graph.size(); i++){
+            int size = graph.get(i).size;
+            startFrieze[i] = size-1;
+        }
+        return startFrieze;
+    }
+
+    private int[] calculateFriezeCounting(int[] startFrieze, int startingPointId) {
+        int[] frieze = new int[numberOfSides*(numberOfSides-1)+1];
+        for(int k =1; k <= numberOfSides; k++){
+            frieze[k] = 1;
+        }
+        for(int k =frieze.length-numberOfSides; k < frieze.length; k++){
+            frieze[k] = 1;
+        }
+        for(int k = 1;k < startFrieze.length;k++){
+            frieze[k+numberOfSides] = startFrieze[k];
+        }
+        int prev1 = frieze[1];
+        int prev2 = startFrieze[1];
+        for(int i =numberOfSides*2+1; i < frieze.length;i++){
+            int a,b,c,d;
+            if(i % numberOfSides == 0){
+                b = prev1;
+                d = prev2;
+                a = frieze[i-numberOfSides];
+                prev1 = prev2;
+                prev2 = frieze[i-numberOfSides+1];
+            }else{
+                a = frieze[i - numberOfSides];
+                d = frieze[i - numberOfSides+1];
+                b = frieze[i - numberOfSides+1-numberOfSides];
+            }
+            c = (a*d-1)/b;
+            frieze[i] = c;
+        }
+
+        return frieze;
+    }
+
+    private void drawPolygon(int sides, Canvas canvas, ArrayList<Point> vertexList, ArrayList<ArrayList<Point>> edgeList){
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
+        draw(canvas);
         double centerX = 150;
         double centerY = 150;
         double radius = 125;

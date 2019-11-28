@@ -14,6 +14,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -83,7 +84,11 @@ public class Main extends Application {
             LearnWindow.displayAlgorithmic();
         });
         learnFlower.setOnAction(e -> {
-            LearnWindow.displayFlowerAlgo();
+            try {
+                LearnWindow.displayFlowerAlgo();
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
         });
         learnLinearCounting.setOnAction(e -> {
             LearnWindow.displayCountingAlgo();
@@ -146,6 +151,10 @@ public class Main extends Application {
         gc.setGlobalBlendMode(BlendMode.SRC_OVER);
         draw(canvas);
         wrapperPane.getChildren().add(canvas);
+
+        Button home = new Button("HOME");
+        Button clear = new Button("CLEAR");
+        topHBox.getChildren().addAll(clear,home);
         borderPane.setPadding(new Insets(50,10,10,20));
         borderPane.setLeft(wrapperPane);
         borderPane.setCenter(labelVBox);
@@ -251,6 +260,37 @@ public class Main extends Application {
             }
         });
 
+        clear.setOnAction(e -> {
+            label1.setText("");
+            label2.setText("");
+            label3.setText("");
+            startingPoints.clear();
+            graph.clear();
+            edgeList.clear();
+            diagonalList.clear();
+            firstTime = true;
+            diagonalSelected=false;
+            numberOfSides=0;
+            numberOfSidesTextField.clear();
+            gc.clearRect(0,0,canvasWidth,canvasHeight);
+        });
+
+        home.setOnAction(e -> {
+            label1.setText("");
+            label2.setText("");
+            label3.setText("");
+            startingPoints.clear();
+            graph.clear();
+            edgeList.clear();
+            diagonalList.clear();
+            firstTime = true;
+            diagonalSelected=false;
+            numberOfSides=0;
+            numberOfSidesTextField.clear();
+            window.setScene(getStartPageScene());
+            gc.clearRect(0,0,canvasWidth,canvasHeight);
+        });
+
         return algorithmicScene;
     }
 
@@ -277,7 +317,9 @@ public class Main extends Application {
         Button generateFrieze = new Button("GENERATE FRIEZE");
         HBox topHBox = new HBox(10);
         topHBox.getChildren().addAll(numberOfSidesLabel,numberOfSidesTextField,generateFrieze);
-
+        Button home = new Button("HOME");
+        Button clear = new Button("CLEAR");
+        topHBox.getChildren().addAll(clear,home);
         labelVBox.getChildren().addAll(label1);
 
         Canvas canvas = new Canvas(canvasWidth,canvasHeight);
@@ -369,6 +411,31 @@ public class Main extends Application {
             }
         });
 
+        clear.setOnAction(e -> {
+            label1.setText("");
+            graph.clear();
+            edgeList.clear();
+            diagonalList.clear();
+            firstTime = true;
+            diagonalSelected=false;
+            numberOfSides=0;
+            numberOfSidesTextField.clear();
+            gc.clearRect(0,0,canvasWidth,canvasHeight);
+        });
+
+        home.setOnAction(e -> {
+            label1.setText("");
+            graph.clear();
+            edgeList.clear();
+            diagonalList.clear();
+            firstTime = true;
+            diagonalSelected=false;
+            numberOfSides=0;
+            numberOfSidesTextField.clear();
+            window.setScene(getStartPageScene());
+            gc.clearRect(0,0,canvasWidth,canvasHeight);
+        });
+
         countingMethodScene = new Scene(borderPane,width,height);
         return countingMethodScene;
     }
@@ -399,7 +466,9 @@ public class Main extends Application {
         Button generateFrieze = new Button("GENERATE FRIEZE");
         HBox topHBox = new HBox(10);
         topHBox.getChildren().addAll(numberOfSidesLabel,numberOfSidesTextField,generateFrieze);
-
+        Button home = new Button("HOME");
+        Button clear = new Button("CLEAR");
+        topHBox.getChildren().addAll(clear,home);
         wrapperPaneFlower.getChildren().addAll(canvasFlower);
         GraphicsContext gc2 = canvasFlower.getGraphicsContext2D();
         draw(canvasFlower);
@@ -536,6 +605,31 @@ public class Main extends Application {
                     textFields.get(i).setEditable(false);
                 }
             }
+        });
+
+        clear.setOnAction(e -> {
+            graph.clear();
+            edgeList.clear();
+            diagonalList.clear();
+            firstTime = true;
+            diagonalSelected=false;
+            numberOfSides=0;
+            numberOfSidesTextField.clear();
+            gc.clearRect(0,0,canvasWidth,canvasHeight);
+            gc2.clearRect(0,0,450,450);
+        });
+
+        home.setOnAction(e -> {
+            graph.clear();
+            edgeList.clear();
+            diagonalList.clear();
+            firstTime = true;
+            diagonalSelected=false;
+            numberOfSides=0;
+            numberOfSidesTextField.clear();
+            window.setScene(getStartPageScene());
+            gc.clearRect(0,0,canvasWidth,canvasHeight);
+            gc2.clearRect(0,0,450,450);
         });
 
         flowerPatternScene = new Scene(borderPane, width,height);

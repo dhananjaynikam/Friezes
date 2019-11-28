@@ -77,8 +77,7 @@ public class LearnWindow {
                 "5. Begin with the vertex labeled 0 and proceed clockwise around the polygon placing all non-zero\n"+
                 "labels down the “diagonal”, using the 1 in the top row as the 1 adjacent to the 0 in clockwise order\n"+
                 "and the 1 in the bottom row as the 1 adjacent to the 0 in counterclockwise order.\n"+
-                "6. Using this diagonal of numbers, determine the inﬁnite frieze.\n"+
-                "7. Note:  The top row should be set to all"+
+                "6. Using this diagonal of numbers, the inﬁnite frieze is determined.\n"+
                 "-Prof. Dr. Sandra Hedetneimi, Clemson University";
 
         window.initModality(Modality.APPLICATION_MODAL);

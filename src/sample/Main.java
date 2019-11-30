@@ -126,6 +126,12 @@ public class Main extends Application {
         ArrayList<Point> startingPoints = new ArrayList<>();
         ArrayList<GraphEdgeList> graph = new ArrayList<>();
 
+        final String step ="\n\nStep 1: Enter the number of sides of polygon \nStep2:Draw the polygon diagonals.\nThe diagonals should not intersect each other inside the polygon\n"+
+                "Step3: Select 3 starting points. Will be marked as RED BLUE GREEN\n" +
+                "Step4: Click on the GENERATE FRIEZE button.\nUse Clear button to clear canvas. \nUse Home button to go to start page";
+        Label steps = new Label(step);
+        steps.setWrapText(true);
+
         Insets insets = new Insets(10);
 
         BorderPane borderPane = new BorderPane();
@@ -159,10 +165,11 @@ public class Main extends Application {
         borderPane.setLeft(wrapperPane);
         borderPane.setCenter(labelVBox);
         borderPane.setTop(topHBox);
+        borderPane.setRight(steps);
         BorderPane.setMargin(borderPane.getTop(),insets);
         BorderPane.setMargin(borderPane.getLeft(),insets);
         BorderPane.setMargin(borderPane.getCenter(),insets);
-        BorderPane.setMargin(borderPane.getLeft(),insets);
+        BorderPane.setMargin(borderPane.getRight(),insets);
         numberOfSidesTextField.focusedProperty().addListener(e -> {
             if(firstTime){
                 topHBox.requestFocus();
@@ -304,6 +311,11 @@ public class Main extends Application {
 
         Insets insets = new Insets(10);
 
+        final String step ="\n\nStep 1: Enter the number of sides of polygon \nStep2:Draw the polygon diagonals.\nThe diagonals should not intersect each other inside the polygon\n"+
+                "Step3: The starting point is marked RED\n" +
+                "Step4: Click on the GENERATE FRIEZE button.\nUse Clear button to clear canvas. \nUse Home button to go to start page";
+        Label steps = new Label(step);
+        steps.setWrapText(true);
         BorderPane borderPane = new BorderPane();
         Pane wrapperPane = new Pane();
         wrapperPane.setMaxHeight(canvasHeight);
@@ -331,10 +343,11 @@ public class Main extends Application {
         borderPane.setLeft(wrapperPane);
         borderPane.setCenter(labelVBox);
         borderPane.setTop(topHBox);
+        borderPane.setRight(steps);
         BorderPane.setMargin(borderPane.getTop(),insets);
         BorderPane.setMargin(borderPane.getLeft(),insets);
         BorderPane.setMargin(borderPane.getCenter(),insets);
-        BorderPane.setMargin(borderPane.getLeft(),insets);
+        BorderPane.setMargin(borderPane.getRight(),insets);
         numberOfSidesTextField.focusedProperty().addListener(e -> {
             if(firstTime){
                 topHBox.requestFocus();
@@ -448,6 +461,14 @@ public class Main extends Application {
         ArrayList<ArrayList<Point>> diagonalList = new ArrayList<>();
         ArrayList<GraphEdgeList> graph = new ArrayList<>();
 
+        final String step ="\n\nStep 1: Enter the number of sides of polygon \nStep2:Draw the polygon diagonals on the left canvas.\nThe diagonals should not intersect each other inside the polygon\n"+
+                "Step3: Starting point will be marked as RED\n" +
+                "Step4: Click on the GENERATE FRIEZE button.\n"+
+                "Step5: Fill the TextFields in the right canvas with the frieze numbers\n"+
+                "Use the formula c = (a*d - 1)/b"+"\nUse Clear button to clear canvas. \nUse Home button to go to start page";
+        Label steps = new Label(step);
+        steps.setWrapText(true);
+
         Insets insets = new Insets(10);
 
         BorderPane borderPane = new BorderPane();
@@ -481,10 +502,11 @@ public class Main extends Application {
         borderPane.setLeft(wrapperPane);
         borderPane.setRight(wrapperPaneFlower);
         borderPane.setTop(topHBox);
+        borderPane.setCenter(steps);
         BorderPane.setMargin(borderPane.getTop(),insets);
         BorderPane.setMargin(borderPane.getLeft(),insets);
         BorderPane.setMargin(borderPane.getRight(),insets);
-        BorderPane.setMargin(borderPane.getLeft(),insets);
+        BorderPane.setMargin(borderPane.getCenter(),insets);
 
         numberOfSidesTextField.focusedProperty().addListener(e -> {
             if(firstTime){
@@ -632,7 +654,7 @@ public class Main extends Application {
             gc2.clearRect(0,0,450,450);
         });
 
-        flowerPatternScene = new Scene(borderPane, width,height);
+        flowerPatternScene = new Scene(borderPane, 1100,height);
         return flowerPatternScene;
     }
 

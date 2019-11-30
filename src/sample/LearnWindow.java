@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,6 +25,7 @@ public class LearnWindow {
                 "From the starting vertex go clockwise making the 2nd row of the frieze\n"+
                 "The first and last row will be of 1's only\n"+
                 "Use the formula a*d = b*c + 1 for calculating all the other rows";
+
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle("LEARN MORE");
         Label label = new Label(data);
@@ -34,6 +36,7 @@ public class LearnWindow {
         window.setScene(new Scene(layout,900,700));
         window.showAndWait();
     }
+
     public static void displayFlowerAlgo() throws FileNotFoundException {
         Stage window = new Stage();
 
@@ -58,8 +61,9 @@ public class LearnWindow {
         label.setStyle("-fx-font-family: \"Comic Sans MS\"; -fx-font-size: 20; -fx-text-fill: darkred;");
         Image image = new Image(new FileInputStream(new File(Main.class.getResource("Examples_flower.png").getFile())));
         ImageView img = new ImageView(image);
-        StackPane layout = new StackPane();
-        layout.getChildren().addAll(label,img);
+        BorderPane layout = new BorderPane();
+        layout.setTop(label);
+        layout.setBottom(img);
         window.setScene(new Scene(layout,900,700));
         window.showAndWait();
     }

@@ -672,6 +672,7 @@ public class Main extends Application {
     }
 
     private boolean validateDiagonal(Point2D[] points, ArrayList<ArrayList<Point>> diagonals){
+        //check if the current diagonal is intersecting with the previous diagonals
         Point2D A = points[0];
         Point2D B = points[1];
 

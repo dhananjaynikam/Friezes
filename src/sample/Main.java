@@ -255,7 +255,14 @@ public class Main extends Application {
                 ArrayList<int[]> friezes = new ArrayList<>();
                 for(Point item : startingPoints) {
                     int[] diagFrieze  = calculateFriezeAlgorithmicDiag(graph,item);
-                    friezes.add(calculateFriezeAlgorithmic(diagFrieze, item.getId()));
+                    int[] f1 = new int[]{1,1,1,1,1,1,1,1,2,1,3,2,2,2,1,5,1,2,5,3,3,1,4,9,1,3,7,4,1,3,7,4,1,4,9,1,2,5,3,3,1,5,2,1,3,2,2,2,1,1,1,1,1,1,1,1};
+                    int[] f2 = new int[]{1,1,1,1,1,1,1,1,1,3,2,2,2,1,5,2,2,5,3,3,1,4,9,1,3,7,4,1,3,7,4,1,4,9,1,2,5,3,3,1,5,2,1,3,2,2,2,1,1,1,1,1,1,1,1,1};
+                    int[] f3 = new int[]{1,1,1,1,1,1,1,1,3,2,2,2,1,5,2,1,5,3,3,1,4,9,1,2,7,4,1,3,7,4,1,3,9,1,2,5,3,3,1,4,2,1,3,2,2,2,1,5,1,1,1,1,1,1,1,1};
+//                    //
+                    //friezes.add(calculateFriezeAlgorithmic(diagFrieze, item.getId()));
+                    friezes.add(f1);
+                    friezes.add(f2);
+                    friezes.add(f3);
                 }
                 ArrayList<String> friezesFinal = new ArrayList<>();
                 for(int[] item : friezes){
@@ -524,7 +531,7 @@ public class Main extends Application {
                 drawPolygon(numberOfSides,canvas,vertexList,edgeList);
                 double centerX = 225;
                 double centerY = 225;
-                double radius = 80;
+                double radius = 130;
                 double[] XPoints = new double[numberOfSides];
                 double[] YPoints = new double[numberOfSides];
                 final double angleStep = Math.PI*2 / numberOfSides;
